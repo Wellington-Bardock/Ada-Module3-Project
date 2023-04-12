@@ -11,6 +11,30 @@ import java.util.Map;
 
 public class RealizarVenda {
 
+    public static final String DADOS_CARRINHO = """
+            %s Produto: %s %s
+            %s Quantidade: %s %s
+            %s Valor Unit: %s R$ %.2f
+            %s Valor total Item: %s R$ %.2f
+                                        
+            """;
+    public static final String TOTAL_CARRINHO = "\n%s Total da Compra: %s R$ %.2f ";
+    public static final String DADOS_CLIENTE = """
+                                    
+            %s Nome do Cliente: %s%s
+            %s Data da Compra: %s%s
+            """;
+    public static final String DADOS_CLIENTE_PT2 = """
+            %s CPF: %s%s
+            %s Carrinho de Compras: %s
+            """;
+    public static final String DADOS_CLIENTE_PF = DADOS_CLIENTE_PT2;
+    public static final String DADOS_CLIENTE_PJ = """
+            %s CNPJ: %s%s
+            %s Carrinho de Compras: %s
+            """;
+    public static final String ESTOQUE_INSUFICIENTE = ConsoleColors.RED_BOLD_BRIGHT + "Estoque Insuficiente!" + ConsoleColors.RESET;
+    public static final String PRODUTO_NAO_ENCONTRADO = ConsoleColors.RED_BOLD_BRIGHT + "Produto não encontrado!" + ConsoleColors.RESET;
     Map<Integer, Item> carrinhoCompra;
 
     Vendas vendas;
@@ -57,31 +81,21 @@ public class RealizarVenda {
 
         vendas.setCarrinhoCompra(carrinhoCompra.values().stream().toList());
 
-        System.out.printf("""
-                                                
-                        %s Nome do Cliente: %s%s
-                        %s Data da Compra: %s%s
-                        """,
+        System.out.printf(DADOS_CLIENTE,
 
                 ConsoleColors.BLUE_BOLD_BRIGHT, ConsoleColors.RESET, vendas.getCliente().getNome(),
                 ConsoleColors.BLUE_BOLD_BRIGHT, ConsoleColors.RESET, vendas.getDataCompra());
 
         if (vendas.getCliente() instanceof PessoaFisica) {
 
-            System.out.printf("""
-                            %s CPF: %s%s
-                            %s Carrinho de Compras: %s
-                            """,
+            System.out.printf(DADOS_CLIENTE_PF,
                     ConsoleColors.BLUE_BOLD_BRIGHT, ConsoleColors.RESET,
                     ((PessoaFisica) vendas.getCliente()).getCpf(),
                     ConsoleColors.BLUE_BOLD_BRIGHT, ConsoleColors.RESET);
 
         } else if (vendas.getCliente() instanceof PessoaJuridica) {
 
-            System.out.printf("""
-                            %s CNPJ: %s%s
-                            %s Carrinho de Compras: %s
-                            """,
+            System.out.printf(DADOS_CLIENTE_PJ,
                     ConsoleColors.BLUE_BOLD_BRIGHT, ConsoleColors.RESET,
                     ((PessoaJuridica) vendas.getCliente()).getCnpj(),
                     ConsoleColors.BLUE_BOLD_BRIGHT, ConsoleColors.RESET);
@@ -101,20 +115,14 @@ public class RealizarVenda {
             totalCompra = totalCompra.add(totalItem);
 
 
-            System.out.printf("""
-                            %s Produto: %s %s
-                            %s Quantidade: %s %s
-                            %s Valor Unit: %s R$ %.2f
-                            %s Valor total Item: %s R$ %.2f
-                                                        
-                            """,
+            System.out.printf(DADOS_CARRINHO,
                     ConsoleColors.BLUE_BOLD_BRIGHT, ConsoleColors.RESET, produto,
                     ConsoleColors.BLUE_BOLD_BRIGHT, ConsoleColors.RESET, qtdCompra,
                     ConsoleColors.BLUE_BOLD_BRIGHT, ConsoleColors.RESET, preco,
                     ConsoleColors.BLUE_BOLD_BRIGHT, ConsoleColors.RESET, totalItem);
         }
 
-        System.out.printf("\n%s Total da Compra: %s R$ %.2f ", ConsoleColors.BLUE_BOLD_BRIGHT, ConsoleColors.RESET, totalCompra);
+        System.out.printf(TOTAL_CARRINHO, ConsoleColors.BLUE_BOLD_BRIGHT, ConsoleColors.RESET, totalCompra);
 
     }
 
@@ -122,7 +130,7 @@ public class RealizarVenda {
 
         if (produto.getQtdEstoque().compareTo(item.getQtdCompra()) < 0) {
 
-            throw new RuntimeException(ConsoleColors.RED_BOLD_BRIGHT + "Estoque Insuficiente!" + ConsoleColors.RESET);
+            throw new RuntimeException(ESTOQUE_INSUFICIENTE);
 
         }
     }
@@ -141,7 +149,7 @@ public class RealizarVenda {
 
             } else {
 
-                throw new RuntimeException(ConsoleColors.RED_BOLD_BRIGHT + "Produto não encontrado!" + ConsoleColors.RESET);
+                throw new RuntimeException(PRODUTO_NAO_ENCONTRADO);
 
             }
         }
