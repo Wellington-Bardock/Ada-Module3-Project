@@ -18,7 +18,7 @@ public class RealizarVenda {
             %s Valor total Item: %s R$ %.2f
                                         
             """;
-    public static final String TOTAL_CARRINHO = "\n%s Total da Compra: %s R$ %.2f ";
+    public static final String TOTAL_CARRINHO = "\n%s Total da Compra: %s R$ %.2f\n";
     public static final String DADOS_CLIENTE = """
                                     
             %s Nome do Cliente: %s%s
@@ -66,13 +66,14 @@ public class RealizarVenda {
 
         if (itemCarrinho == null) {
 
-            carrinhoCompra.put(produto.getId(), item);
             validacaoQtd(item, produto);
+            carrinhoCompra.put(produto.getId(), item);
 
         } else {
 
-            itemCarrinho.setQtdCompra(itemCarrinho.getQtdCompra() + qtd);
             validacaoQtd(itemCarrinho, produto);
+            itemCarrinho.setQtdCompra(itemCarrinho.getQtdCompra() + qtd);
+
         }
     }
 

@@ -58,7 +58,9 @@ public class EditarEstoque {
 
     private Integer getID () {
 
-        return listaEstoque.size()+1;
+        Integer maxKey =listaEstoque.keySet().stream().max(Integer::compareTo).orElse(0);
+
+        return maxKey+1;
 
     }
 
