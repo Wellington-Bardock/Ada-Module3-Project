@@ -1,4 +1,4 @@
-package br.com.ada.projeto.Modulo3.services.RealizarVenda;
+package br.com.ada.projeto.Modulo3.services.realizarVenda;
 
 import br.com.ada.projeto.Modulo3.entity.*;
 import br.com.ada.projeto.Modulo3.extras.ConsoleColors;
@@ -34,7 +34,6 @@ public class RealizarVenda {
             %s Carrinho de Compras: %s
             """;
     public static final String ESTOQUE_INSUFICIENTE = ConsoleColors.RED_BOLD_BRIGHT + "Estoque Insuficiente!" + ConsoleColors.RESET;
-    public static final String PRODUTO_NAO_ENCONTRADO = ConsoleColors.RED_BOLD_BRIGHT + "Produto não encontrado!" + ConsoleColors.RESET;
     Map<Integer, Item> carrinhoCompra;
 
     Vendas vendas;
@@ -133,26 +132,5 @@ public class RealizarVenda {
             throw new RuntimeException(ESTOQUE_INSUFICIENTE);
 
         }
-    }
-
-    public Integer getId(String produtoNome) {
-
-        Integer id = null;
-
-        for (Integer key : carrinhoCompra.keySet()) {
-
-            Item item = carrinhoCompra.get(key);
-
-            if (produtoNome.equalsIgnoreCase(item.getProduto().getNomeProduto())) {
-
-                id = key;
-
-            } else {
-
-                throw new RuntimeException(PRODUTO_NAO_ENCONTRADO);
-
-            }
-        }
-        return id;
     }
 }

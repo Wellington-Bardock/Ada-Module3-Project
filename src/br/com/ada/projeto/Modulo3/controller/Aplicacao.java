@@ -2,56 +2,47 @@ package br.com.ada.projeto.Modulo3.controller;
 
 import br.com.ada.projeto.Modulo3.entity.Pessoa;
 import br.com.ada.projeto.Modulo3.entity.Produto;
-import br.com.ada.projeto.Modulo3.enums.RespostasFechadas;
 import br.com.ada.projeto.Modulo3.enums.TipoOperacoes;
 import br.com.ada.projeto.Modulo3.extras.ConsoleColors;
 import br.com.ada.projeto.Modulo3.factory.CadastroPessoaFactory;
 import br.com.ada.projeto.Modulo3.services.CadastroPessoa.CadastroPessoa;
-import br.com.ada.projeto.Modulo3.services.CadastroProduto.CadastroProduto;
-import br.com.ada.projeto.Modulo3.services.RealizarVenda.RealizarVenda;
+import br.com.ada.projeto.Modulo3.services.editacaoEstoque.EditarEstoque;
+import br.com.ada.projeto.Modulo3.services.realizarVenda.RealizarVenda;
+import br.com.ada.projeto.Modulo3.services.validador.ValidarIntegerMenu;
 
 import java.math.BigDecimal;
 import java.util.Scanner;
 
-public class Aplicacao {
+import static br.com.ada.projeto.Modulo3.services.validador.ValidarBoolean.setBoolean;
+import static br.com.ada.projeto.Modulo3.services.validador.ValidarString.validacaoTextoVazio;
 
+public class Aplicacao {
     public static final String VALOR_INVALIDO = ConsoleColors.RED_BOLD_BRIGHT + "Valor Inválido!" + ConsoleColors.RESET;
     public static final String TEXTO_INVALIDO = ConsoleColors.RED_BOLD_BRIGHT + "Nome do Produto Vázio, tente novamente!" + ConsoleColors.RESET;
     public static final String PRODUTO_NAO_ENCONTRADO = ConsoleColors.RED_BOLD_BRIGHT + "Produto Não Encontrado!" + ConsoleColors.RESET;
     Scanner scanner = new Scanner(System.in);
 
-    CadastroProduto cadastroProduto = new CadastroProduto();
+    EditarEstoque editarEstoque = new EditarEstoque();
 
     public Enum<TipoOperacoes> selecaoMenu(String msgMenu) {
 
         System.out.println(msgMenu);
 
-        int opcaoselecionada = Integer.parseInt(scanner.nextLine());
+        Integer opcaoselecionada = Integer.parseInt(scanner.nextLine());
 
-        if (opcaoselecionada==TipoOperacoes.CADASTRO_PRODUTO.getTpCliente()) {
+        return ValidarIntegerMenu.selecaoMenu(opcaoselecionada);
 
-            return TipoOperacoes.CADASTRO_PRODUTO;
-
-        } else if (opcaoselecionada==TipoOperacoes.REALIZAR_VENDA.getTpCliente()) {
-
-            return TipoOperacoes.REALIZAR_VENDA;
-
-        } else {
-
-            throw new RuntimeException(VALOR_INVALIDO);
-        }
     }
 
-    public void inserirProdutoEstoque(String msgNomeProduto, String msgQtdEstoque, String msgValor, String msgId,
-                                      String msgLoop) {
+    public void inserirProdutoEstoque(String msgNomeProduto, String msgQtdEstoque, String msgValor, String msgLoop) {
+
+        String resposta=null;
+
         do try {
 
             System.out.println(msgNomeProduto);
             String produtoNome = scanner.nextLine();
             validacaoTextoVazio(produtoNome);
-
-            System.out.println(msgId);
-            Integer idProduto = Integer.parseInt(scanner.nextLine());
 
             System.out.println(msgQtdEstoque);
             Integer qtdEstoque = Integer.parseInt(scanner.nextLine());
@@ -59,9 +50,13 @@ public class Aplicacao {
             System.out.println(msgValor);
             BigDecimal valorProduto = new BigDecimal(scanner.nextLine());
 
-            Produto produto = cadastroProduto.cadastrarProduto(produtoNome, qtdEstoque, valorProduto, idProduto);
+            Produto produto = editarEstoque.cadastrarProduto(produtoNome, qtdEstoque, valorProduto);
 
-            cadastroProduto.createProdutoLista(produto);
+            editarEstoque.createProdutoLista(produto);
+
+            System.out.println(msgLoop);
+            resposta = scanner.nextLine();
+
 
         } catch (NumberFormatException numberFormatException) {
             System.out.println(VALOR_INVALIDO);
@@ -69,7 +64,30 @@ public class Aplicacao {
         } catch (RuntimeException runtimeException) {
             System.out.println(TEXTO_INVALIDO);
 
-        } while (setBoolean(msgLoop));
+        } while (setBoolean(resposta));
+
+    }
+
+    public void deletarProdutoEstoque (String msgId) {
+
+        System.out.println(msgId);
+
+        Integer produtoID = Integer.parseInt(scanner.nextLine());
+
+        Produto produto = editarEstoque.readProdutoLista(produtoID);
+        editarEstoque.deleteProdutoLista(produto);
+
+    }
+
+    public void atualizarProdutoEstoque (String msgId, String msgQtdEstoque) {
+
+        System.out.println(msgId);
+        Integer produtoID = Integer.parseInt(scanner.nextLine());
+
+        System.out.println(msgQtdEstoque);
+        Integer qtdProduto = Integer.parseInt(scanner.nextLine());
+
+        editarEstoque.uploadProdutoLista(produtoID, qtdProduto);
 
     }
 
@@ -104,13 +122,14 @@ public class Aplicacao {
     public void criarCarrinhoVenda(String msgQtdVenda, String msgId, String msgLoop, String msgSelecaoProd) {
 
         realizarVenda.abrirVenda(cliente);
+        String resposta = null;
 
         do try{
 
             System.out.println(msgId);
             Integer id = Integer.parseInt(scanner.nextLine());
 
-            String nomeProdutoSelecionado = cadastroProduto.listaEstoque.get(id).getNomeProduto().toUpperCase();
+            String nomeProdutoSelecionado = editarEstoque.listaEstoque.get(id).getNomeProduto().toUpperCase();
 
             System.out.println(ConsoleColors.BLUE_BOLD_BRIGHT + msgSelecaoProd + ConsoleColors.RESET +
                     id + nomeProdutoSelecionado);
@@ -119,8 +138,11 @@ public class Aplicacao {
             Integer qtdVenda = Integer.parseInt(scanner.nextLine());
 
 
-            Produto produto = cadastroProduto.readProdutoLista(id);
+            Produto produto = editarEstoque.readProdutoLista(id);
             realizarVenda.setCarrinhoCompra(produto, qtdVenda);
+
+            System.out.println(msgLoop);
+            resposta = scanner.nextLine();
 
         } catch (NumberFormatException numberFormatException) {
             System.out.println(VALOR_INVALIDO);
@@ -129,42 +151,8 @@ public class Aplicacao {
 
         }
 
-        while (setBoolean(msgLoop));
+        while (setBoolean(resposta));
 
         realizarVenda.finalizarVenda();
-    }
-
-    public boolean setBoolean(String msg) {
-
-        try {
-
-            System.out.println(msg);
-            String resposta = scanner.nextLine();
-
-            if (resposta.equalsIgnoreCase(RespostasFechadas.SIM.getTpResposta())) {
-
-                return true;
-
-            } else if (resposta.equalsIgnoreCase(RespostasFechadas.NAO.getTpResposta())) {
-
-                return false;
-
-            } else {
-
-                throw new RuntimeException();
-
-            }
-
-        } catch (RuntimeException runtimeException) {
-            System.out.println(TEXTO_INVALIDO);
-            return setBoolean(msg);
-        }
-    }
-
-    private void validacaoTextoVazio(String texto) {
-
-        if (texto.isEmpty()) {
-            throw new RuntimeException();
-        }
     }
 }

@@ -1,4 +1,4 @@
-package br.com.ada.projeto.Modulo3.services.CadastroProduto;
+package br.com.ada.projeto.Modulo3.services.editacaoEstoque;
 
 import br.com.ada.projeto.Modulo3.extras.ConsoleColors;
 import br.com.ada.projeto.Modulo3.entity.Produto;
@@ -7,17 +7,15 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CadastroProduto {
-    public Produto cadastrarProduto(String nomeProduto, Integer qtd, BigDecimal preco, Integer id) {
+public class EditarEstoque {
+    public Produto cadastrarProduto(String nomeProduto, Integer qtd, BigDecimal preco) {
 
         Produto produto = new Produto();
 
-        produto.setId(id);
+        produto.setId(getID());
         produto.setNomeProduto(nomeProduto);
         produto.setQtdEstoque(qtd);
         produto.setPrecoVenda(preco);
-
-
 
         return produto;
 
@@ -56,6 +54,12 @@ public class CadastroProduto {
     public Produto readProdutoLista(Integer id) {
 
         return listaEstoque.get(id);
+    }
+
+    private Integer getID () {
+
+        return listaEstoque.size()+1;
+
     }
 
 }
